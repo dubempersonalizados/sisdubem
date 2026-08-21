@@ -281,6 +281,45 @@
             .modal-campos-grid { grid-template-columns:1fr; }
             .modal-campo-linha { grid-template-columns:1fr; }
         }
+
+        /* ===== Configuracao de mensagens ===== */
+        .cfg-tpl { border:1px solid var(--cinza-borda); border-radius:10px; padding:14px 16px; margin-bottom:16px; background:#fff; }
+        .cfg-tpl-titulo { font-size:13.5px; font-weight:700; color:var(--azul-marinho); margin-bottom:10px; }
+        .cfg-tpl-prefixo { background:var(--cinza-claro); border:1px solid var(--cinza-borda); border-radius:8px; padding:12px 14px; font-size:13px; line-height:1.6; color:#475569; margin-bottom:12px; }
+        .var-token { display:inline-block; background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; border-radius:4px; padding:0 5px; font-weight:700; font-size:12px; }
+        .cfg-corpo-label { display:block; font-size:12px; font-weight:600; color:#475569; margin-bottom:6px; }
+        .cfg-corpo-preview { font-size:11.5px; color:#64748b; margin-top:8px; font-style:italic; }
+
+        /* ===== Coluna de selecao (lote) ===== */
+        .th-check, .td-check { width:36px; text-align:center; }
+        .th-check input, .td-check input { width:15px; height:15px; cursor:pointer; accent-color:var(--azul-marinho); }
+        .td-check input { margin:0; }
+
+        /* ===== Barra de acoes em lote ===== */
+        .barra-lote { display:none; align-items:center; justify-content:space-between; gap:12px; background:#fff; border:1px solid #b9f0ce; border-left:4px solid #25D366; padding:10px 16px; border-radius:10px; margin-bottom:16px; flex-wrap:wrap; }
+        .barra-lote.ativa { display:flex; }
+        .barra-lote .lote-info { display:flex; align-items:center; gap:8px; font-weight:600; color:#065f46; font-size:13px; }
+        .barra-lote .lote-acoes { display:flex; align-items:center; gap:8px; }
+
+        /* ===== Preview da mensagem ===== */
+        .preview-cabecalho { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; background:var(--cinza-claro); border:1px solid var(--cinza-borda); border-radius:8px; margin-bottom:14px; flex-wrap:wrap; }
+        .preview-cabecalho .rotulo { font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+        .preview-cabecalho .valor { font-size:13px; font-weight:600; color:#0f172a; }
+        .preview-mensagem { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:16px 18px; white-space:pre-line; font-size:14px; line-height:1.55; color:#1e293b; margin-bottom:16px; }
+        .preview-lista-titulo { font-size:13px; font-weight:700; color:#475569; margin:14px 0 10px; }
+        .preview-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; border:1px solid var(--cinza-borda); border-radius:8px; margin-bottom:8px; background:#fff; }
+        .preview-item-info { display:flex; flex-direction:column; gap:2px; min-width:0; }
+        .preview-item-nome { font-weight:600; font-size:13px; color:#0f172a; }
+        .preview-item-detalhe { font-size:12px; color:#64748b; }
+        .preview-item.um-enviado { background:#f0fdf4; border-color:#86efac; }
+        .preview-item .badge-enviado { display:none; background:#dcfce7; color:#15803d; font-size:11px; font-weight:700; padding:3px 8px; border-radius:10px; }
+        .preview-item.um-enviado .badge-enviado { display:inline-block; }
+        .preview-sem-contato { color:#94a3b8; font-size:13px; padding:8px 4px; }
+
+        /* ===== Config de mensagens ===== */
+        .aviso-variaveis { background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:10px 14px; border-radius:8px; font-size:12.5px; margin-bottom:16px; }
+        .aviso-variaveis code { background:#dbeafe; border-radius:4px; padding:1px 5px; font-weight:700; }
+        .cfg-area { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; min-height:96px; resize:vertical; line-height:1.5; width:100%; display:block; padding:10px 12px; border:1px solid var(--cinza-borda); border-radius:8px; font-size:14px; color:#1e293b; box-sizing:border-box; }
     </style>
 </head>
 <body class="tela-inicial-ativa">
@@ -366,7 +405,10 @@
                     <div class="card-indicador destaque-verde card-grad-ceu" id="cardMetaDiaria" data-od-id="card-meta-diaria"></div>
                 </div>
 
-                <div class="secao-titulo">Controle Operacional de Pedidos</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+                    <div class="secao-titulo" style="margin-bottom:0;">Controle Operacional de Pedidos</div>
+                    <button class="btn-secundario" onclick="abrirConfigMensagens()">Configurar Mensagens</button>
+                </div>
 
                 <div class="filtros-card" style="margin-bottom:15px;">
                     <div style="display:grid;grid-template-columns:130px 2fr 1fr auto;gap:16px;align-items:flex-end;">
@@ -392,12 +434,30 @@
                     <div class="resumo-busca-card resumo-grad-vermelho" data-od-id="resumo-total-receber"><div class="label">Total A Receber</div><div class="value" style="color:#dc2626;" id="valorReceberFiltrado">R$ 0,00</div></div>
                 </div>
 
+                <div class="barra-lote" id="barraLote">
+                    <div class="lote-info"><span>&#128172;</span><span id="loteContagem">0 selecionados</span></div>
+                    <div class="lote-acoes">
+                        <button class="btn-whatsapp" onclick="abrirPreviewLote()">Enviar WhatsApp</button>
+                        <button class="btn-secundario" onclick="limparSelecao()">Limpar sele&ccedil;&atilde;o</button>
+                    </div>
+                </div>
+
                 <div class="tabela-container">
                     <table>
                         <thead><tr>
-                            <th>Comanda</th><th>Data Pedido</th><th>Cliente</th><th>Qtd</th><th>Valor Total</th>
-<th>Recebido 1</th><th>Recebido 2</th><th>A Receber</th><th>Produto</th>
-<th>Prev. Entrega</th><th>Status</th><th>Acoes</th>
+                            <th class="th-check" id="thCheck"><input type="checkbox" id="checkSelecionarTodos" title="Selecionar todos" onclick="event.stopPropagation();alternarSelecionarTodos(this.checked)"></th>
+                            <th>Comanda</th>
+                            <th>Data Pedido</th>
+                            <th>Cliente</th>
+                            <th>Qtd</th>
+                            <th>Valor Total</th>
+                            <th>Recebido 1</th>
+                            <th>Recebido 2</th>
+                            <th>A Receber</th>
+                            <th>Produto</th>
+                            <th>Prev. Entrega</th>
+                            <th>Status</th>
+                            <th>Acoes</th>
                         </tr></thead>
                         <tbody id="tabelaPedidos"></tbody>
                     </table>
@@ -544,6 +604,65 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="modalPreviewWhatsApp">
+    <div class="modal-box" style="max-width:560px;">
+        <div class="modal-header">
+            <h2>&#128172; Pr&eacute;-visualizar Mensagem</h2>
+            <button class="modal-fechar" onclick="fecharPreviewWhatsApp()">&times;</button>
+        </div>
+        <div class="modal-corpo">
+            <div class="preview-cabecalho" id="previewCabecalho"></div>
+            <div class="preview-mensagem" id="previewMensagem"></div>
+            <div id="previewLista"></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancelar" onclick="fecharPreviewWhatsApp()">Cancelar</button>
+            <button class="btn-whatsapp" id="btnConfirmarEnvio" onclick="confirmarEnvioWhatsApp()" style="padding:12px 28px;font-weight:700;font-size:14px;">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalConfigMensagens">
+    <div class="modal-box" style="max-width:940px;">
+        <div class="modal-header">
+            <h2>&#128221; Configurar Mensagens WhatsApp</h2>
+            <button class="modal-fechar" onclick="fecharConfigMensagens()">&times;</button>
+        </div>
+        <div class="modal-corpo">
+            <div class="aviso-variaveis">As vari&aacute;veis <code>{cliente}</code> <code>{comanda}</code> <code>{produto}</code> <code>{previsao}</code> <code>{dias}</code> s&atilde;o inseridas automaticamente pelo sistema. Voc&ecirc; edita apenas o <strong>corpo</strong> da mensagem.</div>
+
+            <div class="cfg-tpl">
+                <div class="cfg-tpl-titulo">Mensagem &quot;Na Loja&quot;</div>
+                <div class="cfg-tpl-prefixo" id="cfgPrefixoNaLoja"></div>
+                <label class="cfg-corpo-label">Corpo da mensagem (edit&aacute;vel)</label>
+                <textarea id="cfgNaLoja" class="cfg-area" rows="6"></textarea>
+                <div class="cfg-corpo-preview">O sistema envia: prefixo acima + corpo digitado abaixo.</div>
+            </div>
+
+            <div class="cfg-tpl">
+                <div class="cfg-tpl-titulo">Mensagem &quot;Atrasado&quot;</div>
+                <div class="cfg-tpl-prefixo" id="cfgPrefixoAtrasado"></div>
+                <label class="cfg-corpo-label">Corpo da mensagem (edit&aacute;vel)</label>
+                <textarea id="cfgAtrasado" class="cfg-area" rows="6"></textarea>
+                <div class="cfg-corpo-preview">O sistema envia: prefixo acima + corpo digitado abaixo.</div>
+            </div>
+
+            <div class="cfg-tpl">
+                <div class="cfg-tpl-titulo">Mensagem &quot;No Prazo&quot;</div>
+                <div class="cfg-tpl-prefixo" id="cfgPrefixoNoPrazo"></div>
+                <label class="cfg-corpo-label">Corpo da mensagem (edit&aacute;vel)</label>
+                <textarea id="cfgNoPrazo" class="cfg-area" rows="6"></textarea>
+                <div class="cfg-corpo-preview">O sistema envia: prefixo acima + corpo digitado abaixo.</div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secundario" onclick="restaurarTemplatesPadrao()" style="margin-right:auto;">Restaurar Padr&atilde;o</button>
+            <button class="btn-cancelar" onclick="fecharConfigMensagens()">Cancelar</button>
+            <button class="btn-salvar" onclick="salvarConfigMensagens()">Salvar</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const URL_API_NOVA = 'https://script.google.com/macros/s/AKfycbwege4lKhziQVR_bEmqy6I08Kx-nPMIOb1C6iP_9BMz2KmfaO363goRCg0iKVFGVVx29w/exec';
     const URL_API_REFERENCIA = 'https://script.google.com/macros/s/AKfycbx6QOcT5EzqH6Rk0E9ZX6L6gGcVUcDUsclsH7-w6fk2CjMKQ6M2LTOMbKhVIU19BbdU/exec';
@@ -640,7 +759,7 @@
         {nome:'Despesas',url:'https://dubempersonalizados.github.io/despesas/',icone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'},
         {nome:'Editar Pedido',url:'https://script.google.com/macros/s/AKfycbwl6hEho7Kh7ColeTIUFhfgkF30QUCOapUxf6fJFVmHYZwG7mC3SCyQv2XJN3E_tceZ/exec',icone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>'},
         {nome:'Impressao',url:'https://script.google.com/macros/s/AKfycbyi2_YcC2y7wVcNCgoANDjtOPUTM8FubNSYGn4yhlf_3nKZA2AeqK1rjLv5Q8AqnD4sUA/exec',icone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>'},
-        {nome:'PDV',url:'https://pdv-six-sigma.vercel.app/',icone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>'}
+        {nome:'PDV',url:'https://dubempersonalizados.github.io/pdvdubem/',icone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>'}
     ];
 
     function formatarMoeda(v) { return v==null||isNaN(v)?'R$ 0,00':'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2}); }
@@ -880,15 +999,265 @@
         return digitos.startsWith('55') ? digitos : '55' + digitos;
     }
 
-    function enviarWhatsApp(comanda) {
+    const ICONE_WHATSAPP = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+
+    const FILTROS_COM_WHATSAPP = ['Na Loja', 'Atrasado', 'No Prazo'];
+
+    // ===== TEMPLATES DE MENSAGEM (configuraveis) =====
+    // prefixo = parte fixa com as variaveis (nao editavel pelo usuario)
+    // corpo   = parte editavel pelo usuario
+    const TEMPLATE_KEY = 'sisDUBEM_templates_v2';
+    const TEMPLATES_PADRAO = {
+        naLoja: {
+            prefixo: 'Ol\u00E1, {cliente}! \uD83D\uDC4B\n' +
+                'Tudo bem? \uD83D\uDE0A\n\n' +
+                'Passando para te avisar que a sua encomenda ficou pronta! \u2705\n\n' +
+                '\uD83D\uDECD\uFE0F Produto: {produto}\n\n',
+            corpo: '\uD83D\uDCE6 Voc\u00EA pode retirar nos seguintes hor\u00E1rios:\n' +
+                '\uD83D\uDD52 Segunda a Sexta: 07h30 \u00E0s 12h e 14h10 \u00E0s 18h\n' +
+                '\uD83D\uDD52 S\u00E1bado: 07h30 \u00E0s 12h \u26A0\uFE0F (somente pela manh\u00E3)\n\n' +
+                'Qualquer d\u00FAvida, \u00E9 s\u00F3 chamar! \uD83D\uDCAC\n' +
+                'Agradecemos pela confian\u00E7a e prefer\u00EAncia! \uD83D\uDC99\uD83E\uDDE1'
+        },
+        atrasado: {
+            prefixo: 'Ol\u00E1, {cliente}! \uD83D\uDC4B\n\n' +
+                'O seu pedido:\n' +
+                '\uD83D\uDCCB {comanda} - {produto}\n\n' +
+                'Com previs\u00E3o de entrega para o dia: \uD83D\uDCC5 {previsao}\n\n' +
+                'Venceu h\u00E1 {dias} dia(s). \u23F0\n\n',
+            corpo: 'Estamos verificando a melhor forma de agilizar a entrega. \uD83D\uDEE1\uFE0F\n\n' +
+                'Qualquer d\u00FAvida, \u00E9 s\u00F3 chamar! \uD83D\uDCAC\n' +
+                'Agradecemos pela paci\u00EAncia e compreens\u00E3o! \uD83D\uDC99\uD83E\uDDE1'
+        },
+        noPrazo: {
+            prefixo: 'Ol\u00E1, {cliente}! \uD83D\uDC4B\n' +
+                'Tudo bem? \uD83D\uDE0A\n\n' +
+                'O seu pedido est\u00E1 em produ\u00E7\u00E3o e ser\u00E1 entregue dentro do prazo. \u2705\n\n' +
+                '\uD83D\uDCCB Pedido: {comanda} - {produto}\n' +
+                '\uD83D\uDCC5 Previs\u00E3o de entrega: {previsao}\n\n',
+            corpo: 'Qualquer novidade, avisamos por aqui! \uD83D\uDCAC\n' +
+                'Agradecemos pela prefer\u00EAncia! \uD83D\uDC99\uD83E\uDDE1'
+        }
+    };
+
+    function obterTemplates() {
+        const padrao = {
+            naLoja: TEMPLATES_PADRAO.naLoja.corpo,
+            atrasado: TEMPLATES_PADRAO.atrasado.corpo,
+            noPrazo: TEMPLATES_PADRAO.noPrazo.corpo
+        };
+        try {
+            const raw = localStorage.getItem(TEMPLATE_KEY);
+            if (raw) {
+                const t = JSON.parse(raw);
+                if (t && t.naLoja != null && t.atrasado != null && t.noPrazo != null) return t;
+            }
+        } catch (e) {}
+        return padrao;
+    }
+
+    function salvarTemplates(t) {
+        try { localStorage.setItem(TEMPLATE_KEY, JSON.stringify(t)); } catch (e) {}
+    }
+
+    function montarMensagemWhatsApp(p, tipo) {
+        const t = TEMPLATES_PADRAO[tipo] || TEMPLATES_PADRAO.naLoja;
+        const corpo = obterTemplates()[tipo] || t.corpo;
+        const tpl = t.prefixo + corpo;
+        const dias = Math.abs(difDias(p.prevEntrega) || 0);
+        return tpl
+            .replace(/\{cliente\}/g, p.cliente || 'Cliente')
+            .replace(/\{comanda\}/g, p.comanda || '')
+            .replace(/\{produto\}/g, p.produto || 'encomenda')
+            .replace(/\{previsao\}/g, p.prevEntrega || '--')
+            .replace(/\{dias\}/g, dias);
+    }
+
+    function enviarWhatsApp(comanda, tipo) {
         const p = dadosMapa.find(x => x.comanda === comanda);
         if (!p || !p.contato) return;
         const telefone = limparTelefone(p.contato);
         if (!telefone) return;
-        const nome = p.cliente || 'Cliente';
-        const produto = p.produto || 'encomenda';
-        const mensagem = 'Ol\u00E1, ' + nome + ', tudo bem? Passando aqui pra te avisar que a sua encomenda: ' + produto + ' ficou pronta! \uD83D\uDE04\uD83D\uDC4FPode passar pra retirar em qualquer um dos seguintes hor\u00E1rios:\uD83D\uDD52 Segunda a Sexta Das 07:30h \u00E0s 12h e de 14:10 \u00E0s 18h\uD83D\uDD52 S\u00E1bado Das 07:30h \u00E0s 12h \u26A0\uFE0F Somente no turno da manh\u00E3.Qualquer d\u00FAvida, \u00E9 s\u00F3 chamar! Agradecemos pela confian\u00E7a e prefer\u00EAncia! \uD83D\uDC99\uD83E\uDDE1';
-        window.open('https://wa.me/' + telefone + '?text=' + encodeURIComponent(mensagem), '_blank');
+        const mensagem = montarMensagemWhatsApp(p, tipo || 'naLoja');
+        window.open('https://web.whatsapp.com/send?phone=' + telefone + '&text=' + encodeURIComponent(mensagem), '_blank');
+    }
+
+    function botaoWhatsApp(p, filtroStatus) {
+        const tipos = { 'Na Loja': 'naLoja', 'Atrasado': 'atrasado', 'No Prazo': 'noPrazo' };
+        const tipo = tipos[filtroStatus];
+        if (!tipo || !p.contato) return '';
+        const titulos = { 'naLoja': 'Enviar WhatsApp', 'atrasado': 'Avisar atraso do pedido', 'noPrazo': 'Enviar WhatsApp' };
+        return ' <button class="btn-whatsapp" onclick="event.stopPropagation();abrirPreviewWhatsApp(\'' + p.comanda + '\',\'' + tipo + '\')" title="' + titulos[tipo] + '">' + ICONE_WHATSAPP + '</button>';
+    }
+
+    // ===== PRE-VISUALIZACAO DA MENSAGEM =====
+    let previewLista = [];
+    let previewTipo = 'naLoja';
+    let previewModo = 'single';
+
+    function abrirPreviewWhatsApp(comanda, tipo) {
+        const p = dadosMapa.find(x => x.comanda === comanda);
+        if (!p) return;
+        if (!p.contato) { alert('Este pedido n\u00E3o possui contato cadastrado.'); return; }
+        previewLista = [p];
+        previewTipo = tipo || 'naLoja';
+        previewModo = 'single';
+        renderizarPreview();
+        document.getElementById('modalPreviewWhatsApp').classList.add('active');
+    }
+
+    function abrirPreviewLote() {
+        const selecionados = dadosMapa.filter(p => selecaoLote.has(p.comanda));
+        const comContato = selecionados.filter(p => p.contato);
+        const semContato = selecionados.filter(p => !p.contato);
+        if (!comContato.length) { alert('Nenhum dos pedidos selecionados possui contato cadastrado.'); return; }
+        previewLista = comContato;
+        previewTipo = statusFiltro === 'Na Loja' ? 'naLoja' : statusFiltro === 'Atrasado' ? 'atrasado' : 'noPrazo';
+        previewModo = 'lote';
+        renderizarPreview();
+        if (semContato.length) {
+            setTimeout(function() { alert(semContato.length + ' pedido(s) sem contato foram ignorados.'); }, 50);
+        }
+        document.getElementById('modalPreviewWhatsApp').classList.add('active');
+    }
+
+    function renderizarPreview() {
+        const cab = document.getElementById('previewCabecalho');
+        const msg = document.getElementById('previewMensagem');
+        const lista = document.getElementById('previewLista');
+        const btnEnviar = document.getElementById('btnConfirmarEnvio');
+
+        if (previewModo === 'single') {
+            const p = previewLista[0];
+            cab.innerHTML = '<div><div class="rotulo">Cliente</div><div class="valor">' + (p.cliente || '--') + '</div></div>' +
+                '<div><div class="rotulo">Comanda</div><div class="valor">' + (p.comanda || '--') + '</div></div>' +
+                '<div><div class="rotulo">Telefone</div><div class="valor">' + (p.contato || '--') + '</div></div>';
+            msg.textContent = montarMensagemWhatsApp(p, previewTipo);
+            lista.innerHTML = '';
+            lista.style.display = 'none';
+            btnEnviar.style.display = 'inline-flex';
+        } else {
+            const amostra = previewLista[0];
+            cab.innerHTML = '<div><div class="rotulo">Envio em lote</div><div class="valor">' + previewLista.length + ' cliente(s) com contato</div></div>' +
+                '<div><div class="rotulo">Template</div><div class="valor">' + (previewTipo === 'naLoja' ? 'Na Loja' : previewTipo === 'atrasado' ? 'Atrasado' : 'No Prazo') + '</div></div>';
+            msg.innerHTML = '<div style="font-size:12px;color:#15803d;font-weight:700;margin-bottom:6px;">Pr\u00E9via (exemplo com o primeiro cliente):</div>' + '<div>' + escaparHtml(montarMensagemWhatsApp(amostra, previewTipo)).replace(/\n/g, '<br>') + '</div>';
+            lista.style.display = 'block';
+            lista.innerHTML = '<div class="preview-lista-titulo">Clique em \u201CEnviar\u201D para cada cliente:</div>' + previewLista.map(p => {
+                const nome = (p.cliente || '--');
+                const det = (p.comanda || '--') + ' &middot; ' + (p.contato || 'sem contato');
+                return '<div class="preview-item" id="pvItem_' + p.comanda + '"><div class="preview-item-info"><div class="preview-item-nome">' + nome + '</div><div class="preview-item-detalhe">' + det + '</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="badge-enviado">&#10003; Enviado</span><button class="btn-whatsapp" onclick="enviarWhatsApp(\'' + p.comanda + '\',\'' + previewTipo + '\');marcarItemEnviado(\'' + p.comanda + '\')">' + ICONE_WHATSAPP + ' Enviar</button></div></div>';
+            }).join('');
+            btnEnviar.style.display = 'none';
+        }
+    }
+
+    function marcarItemEnviado(comanda) {
+        const item = document.getElementById('pvItem_' + comanda);
+        if (item) item.classList.add('um-enviado');
+    }
+
+    function escaparHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function confirmarEnvioWhatsApp() {
+        if (previewModo !== 'single' || !previewLista.length) return;
+        const p = previewLista[0];
+        enviarWhatsApp(p.comanda, previewTipo);
+        fecharPreviewWhatsApp();
+    }
+
+    function fecharPreviewWhatsApp() {
+        document.getElementById('modalPreviewWhatsApp').classList.remove('active');
+        previewLista = [];
+    }
+
+    // ===== SELECAO EM LOTE =====
+    let selecaoLote = new Set();
+
+    function atualizarBarraLote() {
+        const barra = document.getElementById('barraLote');
+        const total = selecaoLote.size;
+        const ativo = FILTROS_COM_WHATSAPP.indexOf(statusFiltro) >= 0;
+        if (ativo && total > 0) {
+            document.getElementById('loteContagem').textContent = total + ' pedido(s) selecionado(s)';
+            barra.classList.add('ativa');
+        } else {
+            barra.classList.remove('ativa');
+        }
+        const checkTodos = document.getElementById('checkSelecionarTodos');
+        if (checkTodos) checkTodos.checked = false;
+    }
+
+    function alternarSelecao(comanda, checked) {
+        if (checked) selecaoLote.add(comanda); else selecaoLote.delete(comanda);
+        atualizarBarraLote();
+    }
+
+    function alternarSelecionarTodos(checked) {
+        document.querySelectorAll('#tabelaPedidos input.selecao-pedido').forEach(function(cb) {
+            if (cb.checked !== checked) {
+                cb.checked = checked;
+                const comanda = cb.dataset.comanda;
+                if (checked) selecaoLote.add(comanda); else selecaoLote.delete(comanda);
+            }
+        });
+        atualizarBarraLote();
+    }
+
+    function limparSelecao() {
+        selecaoLote.clear();
+        document.querySelectorAll('#tabelaPedidos input.selecao-pedido').forEach(function(cb) { cb.checked = false; });
+        const checkTodos = document.getElementById('checkSelecionarTodos');
+        if (checkTodos) checkTodos.checked = false;
+        atualizarBarraLote();
+    }
+
+    // ===== CONFIGURACAO DOS TEMPLATES =====
+    function renderizarPrefixo(tipo) {
+        const el = document.getElementById('cfgPrefixo' + (tipo === 'naLoja' ? 'NaLoja' : tipo === 'atrasado' ? 'Atrasado' : 'NoPrazo'));
+        const prefixo = TEMPLATES_PADRAO[tipo].prefixo;
+        const comVariaveis = escaparHtml(prefixo).replace(/\{cliente\}/g, '<span class="var-token">{cliente}</span>')
+            .replace(/\{comanda\}/g, '<span class="var-token">{comanda}</span>')
+            .replace(/\{produto\}/g, '<span class="var-token">{produto}</span>')
+            .replace(/\{previsao\}/g, '<span class="var-token">{previsao}</span>')
+            .replace(/\{dias\}/g, '<span class="var-token">{dias}</span>')
+            .replace(/\n/g, '<br>');
+        el.innerHTML = comVariaveis;
+    }
+
+    function abrirConfigMensagens() {
+        const t = obterTemplates();
+        document.getElementById('cfgNaLoja').value = t.naLoja;
+        document.getElementById('cfgAtrasado').value = t.atrasado;
+        document.getElementById('cfgNoPrazo').value = t.noPrazo;
+        renderizarPrefixo('naLoja');
+        renderizarPrefixo('atrasado');
+        renderizarPrefixo('noPrazo');
+        document.getElementById('modalConfigMensagens').classList.add('active');
+    }
+
+    function fecharConfigMensagens() {
+        document.getElementById('modalConfigMensagens').classList.remove('active');
+    }
+
+    function salvarConfigMensagens() {
+        const t = {
+            naLoja: document.getElementById('cfgNaLoja').value,
+            atrasado: document.getElementById('cfgAtrasado').value,
+            noPrazo: document.getElementById('cfgNoPrazo').value
+        };
+        salvarTemplates(t);
+        fecharConfigMensagens();
+        alert('Mensagens salvas com sucesso!');
+    }
+
+    function restaurarTemplatesPadrao() {
+        if (!window.confirm('Restaurar as mensagens para o padr\u00E3o original?')) return;
+        try { localStorage.removeItem(TEMPLATE_KEY); } catch (e) {}
+        document.getElementById('cfgNaLoja').value = TEMPLATES_PADRAO.naLoja.corpo;
+        document.getElementById('cfgAtrasado').value = TEMPLATES_PADRAO.atrasado.corpo;
+        document.getElementById('cfgNoPrazo').value = TEMPLATES_PADRAO.noPrazo.corpo;
     }
 
     // ===== ALERTA DE PECAS/PEDIDOS A VENCER =====
@@ -976,6 +1345,11 @@
 
     function renderizarTabelaPedidos(pedidos,filtroStatus) {
         const tb=document.getElementById('tabelaPedidos');
+        const loteAtivo = FILTROS_COM_WHATSAPP.indexOf(filtroStatus) >= 0;
+        const thCheck=document.getElementById('thCheck');
+        if (thCheck) thCheck.style.display = loteAtivo ? '' : 'none';
+        if (!loteAtivo) limparSelecao();
+
         let f=pedidos;
         if (filtroStatus&&filtroStatus!=='todos') f=f.filter(p=>p.status===filtroStatus);
         const bc=limparTexto(document.getElementById('buscaComanda').value);
@@ -990,13 +1364,16 @@
         document.getElementById('valorTotalFiltrado').textContent=formatarMoeda(f.reduce((s,p)=>s+(p.valor||0),0));
         document.getElementById('valorReceberFiltrado').textContent=formatarMoeda(f.reduce((s,p)=>s+(p.aReceber||0),0));
 
-        if (!f.length) { tb.innerHTML='<tr><td colspan="13" style="text-align:center;padding:40px;color:#94a3b8;">Nenhum pedido encontrado</td></tr>'; return; }
+        const colunas=loteAtivo?14:13;
+        if (!f.length) { tb.innerHTML='<tr><td colspan="'+colunas+'" style="text-align:center;padding:40px;color:#94a3b8;">Nenhum pedido encontrado</td></tr>'; atualizarBarraLote(); return; }
         const visiveis=f.slice(0,linhasExibidas);
-        tb.innerHTML=visiveis.map(p=>`<tr class="clickable" onclick="abrirEdicao('${p.comanda}')"><td><strong>${p.comanda||'--'}</strong></td><td>${p.dataPedido}</td><td>${p.cliente||'--'}</td><td>${p.quantidade||0}</td><td>${formatarMoeda(p.valor)}</td><td>${formatarMoeda(p.recebido)}</td><td>${formatarMoeda(p.segundaParcela)}</td><td style="color:${p.aReceber>0?'#b91c1c':'#15803d'};font-weight:600;">${formatarMoeda(p.aReceber)}</td><td>${p.produto||'--'}</td><td>${p.prevEntrega}${badgeDias(p.status,p.prevEntrega)}</td><td><span class="badge ${getStatusClass(p.status)}">${p.status||'--'}</span></td><td style="white-space:nowrap"><button class="btn-editar" onclick="event.stopPropagation();abrirEdicao('${p.comanda}')">Editar</button>${filtroStatus==='Na Loja'&&p.contato?' <button class="btn-whatsapp" onclick="event.stopPropagation();enviarWhatsApp(\''+p.comanda+'\')" title="Enviar WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>':''}</td></tr>`).join('');
+        const celCheck=p=>loteAtivo?'<td class="td-check"><input type="checkbox" class="selecao-pedido" data-comanda="'+p.comanda+'"'+(selecaoLote.has(p.comanda)?' checked':'')+' onclick="event.stopPropagation();alternarSelecao(this.dataset.comanda,this.checked)"></td>':'';
+        tb.innerHTML=visiveis.map(p=>`<tr class="clickable" onclick="abrirEdicao('${p.comanda}')">${celCheck(p)}<td><strong>${p.comanda||'--'}</strong></td><td>${p.dataPedido}</td><td>${p.cliente||'--'}</td><td>${p.quantidade||0}</td><td>${formatarMoeda(p.valor)}</td><td>${formatarMoeda(p.recebido)}</td><td>${formatarMoeda(p.segundaParcela)}</td><td style="color:${p.aReceber>0?'#b91c1c':'#15803d'};font-weight:600;">${formatarMoeda(p.aReceber)}</td><td>${p.produto||'--'}</td><td>${p.prevEntrega}${badgeDias(p.status,p.prevEntrega)}</td><td><span class="badge ${getStatusClass(p.status)}">${p.status||'--'}</span></td><td style="white-space:nowrap"><button class="btn-editar" onclick="event.stopPropagation();abrirEdicao('${p.comanda}')">Editar</button>${botaoWhatsApp(p,filtroStatus)}</td></tr>`).join('');
         if (f.length>linhasExibidas) {
             const restantes=f.length-linhasExibidas;
-            tb.innerHTML+=`<tr><td colspan="13" style="text-align:center;padding:16px;background:#f8fafc;"><button class="btn-carregar-mais" onclick="carregarMaisLinhas()">Carregar mais ${Math.min(restantes,linhasPorPagina)} de ${restantes} pedido(s)</button></td></tr>`;
+            tb.innerHTML+=`<tr><td colspan="${colunas}" style="text-align:center;padding:16px;background:#f8fafc;"><button class="btn-carregar-mais" onclick="carregarMaisLinhas()">Carregar mais ${Math.min(restantes,linhasPorPagina)} de ${restantes} pedido(s)</button></td></tr>`;
         }
+        atualizarBarraLote();
     }
 
     function carregarMaisLinhas() {
@@ -1792,12 +2169,14 @@
         iniciarAutoRefresh();
         document.getElementById('btnAplicarFiltros').addEventListener('click',function(){mesSelecionado=document.getElementById('filtroMes').value;anoSelecionado=document.getElementById('filtroAno').value;renderizarCards(dadosMensais,dadosDiarios,mesSelecionado,anoSelecionado);});
         document.getElementById('btnLimparFiltros').addEventListener('click',function(){mesSelecionado='todos';anoSelecionado='todos';document.getElementById('filtroMes').value='todos';document.getElementById('filtroAno').value='todos';renderizarCards(dadosMensais,dadosDiarios,mesSelecionado,anoSelecionado);});
-        document.querySelectorAll('.status-btn').forEach(b=>{b.addEventListener('click',function(){document.querySelectorAll('.status-btn').forEach(x=>x.classList.remove('active'));this.classList.add('active');statusFiltro=this.dataset.status;resetarPaginacao();renderizarTabelaPedidos(dadosMapa,statusFiltro);});});
+        document.querySelectorAll('.status-btn').forEach(b=>{b.addEventListener('click',function(){document.querySelectorAll('.status-btn').forEach(x=>x.classList.remove('active'));this.classList.add('active');statusFiltro=this.dataset.status;limparSelecao();resetarPaginacao();renderizarTabelaPedidos(dadosMapa,statusFiltro);});});
         document.getElementById('btnBuscarPedidos').addEventListener('click',()=>{resetarPaginacao();renderizarTabelaPedidos(dadosMapa,statusFiltro);});
         document.getElementById('btnLimparFiltrosPedidos').addEventListener('click',function(){document.getElementById('buscaComanda').value='';document.getElementById('buscaCliente').value='';document.getElementById('buscaGlobal').value='';resetarPaginacao();renderizarTabelaPedidos(dadosMapa,statusFiltro);});
         ['buscaComanda','buscaCliente','buscaGlobal'].forEach(id=>document.getElementById(id).addEventListener('keyup',function(e){if(e.key==='Enter'){resetarPaginacao();renderizarTabelaPedidos(dadosMapa,statusFiltro);}}));
         document.getElementById('modalEdicao').addEventListener('click',function(e){if(e.target===this)fecharModal();});
         document.getElementById('modalRelatorioProducao').addEventListener('click',function(e){if(e.target===this)fecharRelatorioProducao();});
+        document.getElementById('modalPreviewWhatsApp').addEventListener('click',function(e){if(e.target===this)fecharPreviewWhatsApp();});
+        document.getElementById('modalConfigMensagens').addEventListener('click',function(e){if(e.target===this)fecharConfigMensagens();});
 
         document.getElementById('editLocalProducao').addEventListener('change',function(){
             if (this.value==='Costura') {
